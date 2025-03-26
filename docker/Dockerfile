@@ -13,18 +13,21 @@
 
 FROM alpine:latest
 
+ENV PYTHONUNBUFFERED=1
+ENV PATH="/opt/venv/bin:$PATH"
+
+WORKDIR /app/
+
 RUN apk --no-cache update \
     && apk --no-cache upgrade \
-    && apk add --no-cache \
-        python3 py3-pip curl wget libressl-dev vim nmap tzdata git
+    && apk add --no-cache python3 py3-pip curl wget libressl-dev vim nmap tzdata git
 
 RUN mkdir /opt/xml && mkdir /opt/notes && \
     wget -P /opt/ https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz && \
     cd /opt/ && tar -xvf /opt/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
 
-RUN python3 -m venv /path/to/venv && \
-    . /path/to/venv/bin/activate && \
-    pip3 install Django requests xmldict && \
+RUN python3 -m venv /opt/venv && \
+    pip3 install -U Django requests xmldict xmltodict && \
     cd /opt/ && django-admin startproject nmapdashboard && cd /opt/nmapdashboard && \
     git clone https://github.com/ss-o/WebMap.git nmapreport && \
     cd nmapreport && git checkout main
