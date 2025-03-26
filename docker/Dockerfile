@@ -1,6 +1,6 @@
 # Usage:
 #    $ cd /opt
-#    $ git clone https://github.com/SabyasachiRana/WebMap.git
+#    $ git clone https://github.com/ss-o/WebMap.git
 #    $ cd WebMap/docker
 #    $ docker build -t webmap:latest .
 #    $ docker run -d -v /opt/WebMap/docker/xml:/opt/xml -p 8000:8000 webmap:latest
@@ -13,19 +13,21 @@
 
 FROM alpine:latest
 
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN apk update && apk add --no-cache \
-    python3 py3-pip curl wget wkhtmltopdf libressl-dev vim nmap tzdata
+RUN apk --no-cache update \
+    && apk --no-cache upgrade \
+    && apk add --no-cache \
+        python3 py3-pip curl wget libressl-dev vim nmap tzdata git
 
 RUN mkdir /opt/xml && mkdir /opt/notes && \
     wget -P /opt/ https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz && \
     cd /opt/ && tar -xvf /opt/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
 
-RUN pip3 install Django requests xmldict && \
+RUN python3 -m venv /path/to/venv && \
+    . /path/to/venv/bin/activate && \
+    pip3 install Django requests xmldict && \
     cd /opt/ && django-admin startproject nmapdashboard && cd /opt/nmapdashboard && \
-    git clone https://github.com/SabyasachiRana/WebMap.git nmapreport && \
-    cd nmapreport && git checkout master
+    git clone https://github.com/ss-o/WebMap.git nmapreport && \
+    cd nmapreport && git checkout main
 
 RUN cp /opt/nmapdashboard/nmapreport/docker/settings.py /opt/nmapdashboard/nmapdashboard/
 RUN cp /opt/nmapdashboard/nmapreport/docker/urls.py /opt/nmapdashboard/nmapdashboard/
